@@ -24,7 +24,7 @@ router.put('/', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-    const text = 'SELECT _id, _type FROM types';
+    const text = 'SELECT id, _type FROM types';
     pool.connect()
     .then(client => {
         client.query(text)
