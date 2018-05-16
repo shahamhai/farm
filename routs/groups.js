@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { pool } = require("../db/db-connection");
 
 // send all groups
-router.get('/groups', (req, res) => {
+router.get('/', (req, res) => {
     const text = `
         SELECT _id, name, (SELECT COUNT(group_id) AS animals FROM animal_group WHERE animal_group.group_id=groups._id) FROM groups;`;
     let groups = [];
@@ -29,7 +29,7 @@ router.get('/groups', (req, res) => {
     });
 });
 // create new group
-router.put('/groups', (req, res) => {
+router.put('/', (req, res) => {
     const text = 'INSERT INTO groups(name) VALUES($1)';
     const values = [req.body.name];
     pool.connect()
@@ -54,8 +54,9 @@ router.put('/groups', (req, res) => {
     res.status(200).send();
 });
 // edit group
-router.post('/groups', (req, res) => {
+router.post('/', (req, res) => {
     const { name, id } = req.body;
+    console.log('in /groups post', id, name);
     const text = 'UPDATE groups SET name=$2 WHERE _id=$1';
     const values = [id, name];
     pool.connect().then(client => {
@@ -68,7 +69,7 @@ router.post('/groups', (req, res) => {
         .catch(e => {
             client.release();
             console.error('error at query', e.stack);
-        })
+        });
     })
     .catch(e => {
         console.error('error at connection', e.stack);
@@ -76,9 +77,9 @@ router.post('/groups', (req, res) => {
     });
 });
 // delete group
-router.delete('/groups/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
     const { id } = req.params;
-    const text = 'DELETE FROM groups WHERE _id=$1';
+    const text = `DELETE FROM groups WHERE _id=$1`;
     const values = [id];
     pool.connect()
     .then(client => {

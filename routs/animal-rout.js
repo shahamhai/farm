@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-router.get('/animals', (req, res) => {
+router.get('/', (req, res) => {
     console.log('api/animals was called');
     res.status(200);
     res.jsonp({
@@ -11,10 +11,19 @@ router.get('/animals', (req, res) => {
     });
 });
 
-router.put('/animal', (req, res) => {
+router.put('/', (req, res) => {
     console.log(req.body);
-    res.status(200);
-    res.send();
+    res.status(200).send();
 });
+
+router.post('/', (req, res) => {
+    console.log(req.body);
+    res.status(200).send();
+});
+
+router.delete('/:id', (req, res) => {
+    console.log(req.params);
+    res.status(200).send();
+})
 
 module.exports = router;

@@ -3,12 +3,9 @@ const bodyParser = require("body-parser");
 const sessions = require("client-sessions");
 const passport = require("passport");
 const path = require("path");
-const port = require("./config/keys").port;
+const { port } = require("./config/keys");
 const cors = require("cors");
-
-const loginRoutes = require("./routs/auth");
-const animalRouts = require("./routs/animal-rout.js");
-const groupRoutes = require("./routs/groups");
+const routes = require("./routs/routes");
 
 const app = express();
 
@@ -37,11 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //routes settings
-app.use('/login', loginRoutes);
-app.use('/api', [animalRouts, groupRoutes]);
-app.get('/test',(req, res) =>{
-    res.jsonp({"this": "is a test"})
-});
+app.use('/', routes);
 
 // set pubilc folder
 //app.use(express.static(__dirname, 'public'));
