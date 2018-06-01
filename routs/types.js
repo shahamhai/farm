@@ -2,17 +2,20 @@ const router = require("express").Router();
 const { pool } = require("../db/db-connection");
 
 router.put('/', (req, res) => {
-    const text = 'INSERT INTO types(_type) VALUES($1)';
-    const values = [req.body.animalType];
+    const text = `INSERT INTO types(_type) VALUES($1)
+                    RETURNING id`;
+    const values = [req.body._type];
     pool.connect()
     .then(client => {
         client.query(text, values)
         .then(data => {
             client.release();
-            res.status(200).send();
+            console.log(data.rows[0]);
+            const _type = {_type:req.body._type, id:data.rows[0].id};
+            res.status(200).jsonp({_type:_type});
         })
         .catch(err => {
-            console.error('error in query', err);
+            console.error('error in query', err.stack);
             client.release();
             res.status(400).send();
         });
@@ -30,8 +33,8 @@ router.get('/', (req, res) => {
         client.query(text)
         .then(data => {
             client.release();
-            const types = data.rows;
-            res.status(200).jsonp(types);
+            const ans = {types:data.rows};
+            res.status(200).jsonp(ans);
         })
         .catch(err => {
             client.release();
@@ -45,19 +48,22 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    const { id, _type} = req.body._type;
-    const text = 'UPDATE types WHERE id=$1 SET _type=$2';
+    const { id, _type} = req.body;
+    const text = `UPDATE types SET _type=$2 WHERE id=$1
+        RETURNING id, _type`;
     const values = [id, _type];
+    console.log(req.body);
     pool.connect()
     .then(client => {
         client.query(text, values)
         .then(data => {
+            console.log(data.rows);
             client.release();
             res.status(200).send();
         })
         .catch(err => {
             client.release();
-            console.error('error in query', err);
+            console.error('error in query', err.stack);
             res.status(400).send();
         });
     })
