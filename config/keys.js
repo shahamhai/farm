@@ -1,1 +1,1 @@
-module.exports = {port: 80};
+module.exports = {port: 3000};
